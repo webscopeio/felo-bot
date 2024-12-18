@@ -1,10 +1,14 @@
 package main
 
 import (
+	// std
 	"fmt"
 	"os"
+	// local modules
 	"webscope.io/felo/modules/server"
 	"webscope.io/felo/modules/slack"
+	// external modules
+	"github.com/joho/godotenv"
 )
 
 type ENV struct {
@@ -21,10 +25,18 @@ func readEnv() (ENV, error) {
 		"PORT",
 	}
 
+	localEnv, envErr := godotenv.Read(".env")
+
 	for _, key := range envKeys {
+		// Atempt to get OS level ENV variable
 		val := os.Getenv(key)
 		if val == "" {
-			return ENV{}, fmt.Errorf("Missing environment variable %s", key)
+			// If not found, attempt to read from .env file
+			if envErr != nil || localEnv[key] == "" {
+				return ENV{}, fmt.Errorf("missing environment variable %s", key)
+			} else {
+				val = localEnv[key]
+			}
 		}
 		envMap[key] = val
 	}
