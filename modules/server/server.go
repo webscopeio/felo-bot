@@ -28,6 +28,17 @@ func matchHandler(ctx *gin.Context, client *slack.Client) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+func eventsHandler(ctx *gin.Context, client *slack.Client) {
+	evenType := ctx.PostForm("type")
+	switch evenType {
+		case "url_verification":
+			challenge := ctx.PostForm("challenge")
+			ctx.JSON(http.StatusOK, gin.H{"challenge": challenge})
+		default:
+			ctx.JSON(http.StatusOK, gin.H{"status": "success", "ok": true})
+		}
+}
+
 func New(env string, port string, client *slack.Client) {
 	if env == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -37,6 +48,7 @@ func New(env string, port string, client *slack.Client) {
 	handler := createHandlerWithClient(client)
 
 	router.GET("/slack/match", handler(matchHandler))
+	router.POST("/slack/events", handler(eventsHandler))
 
 	if port == "" {
 		port = "8080"
