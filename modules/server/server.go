@@ -70,7 +70,7 @@ func New(env string, port string, client *slack.Client) {
 
 	handler := createHandlerWithClient(client)
 
-	router.GET("/slack/match", handler(matchHandler))
+	router.POST("/slack/match", handler(matchHandler))
 	router.POST("/slack/events", handler(eventsHandler))
 
 	if port == "" {
