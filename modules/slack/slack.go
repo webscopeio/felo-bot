@@ -25,24 +25,23 @@ func New(token string) *Client {
 }
 
 type Request struct {
-  path string
-  method string
+	path   string
+	method string
 
-  // optional parameters
-  params map[string]string
-  body io.Reader
+	// optional parameters
+	params map[string]string
+	body   io.Reader
 }
 
-
 func (c *Client) request(r Request) (*http.Response, error) {
-  url := c.url + r.path
-  for k, v := range r.params {
-    if strings.Contains(url, "?") {
-      url += "&" + k + "=" + v
-    } else {
-      url += "?" + k + "=" + v
-    }
-  }
+	url := c.url + r.path
+	for k, v := range r.params {
+		if strings.Contains(url, "?") {
+			url += "&" + k + "=" + v
+		} else {
+			url += "?" + k + "=" + v
+		}
+	}
 	req, err := http.NewRequest(r.method, url, r.body)
 	if err != nil {
 		return nil, err
@@ -53,7 +52,7 @@ func (c *Client) request(r Request) (*http.Response, error) {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Content-Type", "application/json")
 	}
-	req.Header.Set("Authorization", "Bearer "+ c.token)
+	req.Header.Set("Authorization", "Bearer "+c.token)
 	return c.client.Do(req)
 }
 
@@ -62,15 +61,15 @@ func (c *Client) PostMessage(channel string, text string) (*http.Response, error
 	body.Set("channel", channel)
 	body.Set("text", text)
 	return c.request(Request{
-    path: "/chat.postMessage",
-    method: http.MethodPost,
-    body: strings.NewReader(body.Encode()),
-  })
+		path:   "/chat.postMessage",
+		method: http.MethodPost,
+		body:   strings.NewReader(body.Encode()),
+	})
 }
 
 func (c *Client) GetChannelList() (*http.Response, error) {
-  return c.request(Request{
-    path: "/conversations.list",
-    method: http.MethodGet,
-  })
+	return c.request(Request{
+		path:   "/conversations.list",
+		method: http.MethodGet,
+	})
 }
