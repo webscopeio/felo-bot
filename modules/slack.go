@@ -174,7 +174,7 @@ func (s* Slack) PostMatch() (*http.Response, error) {
 		})
 }
 
-func (s* Slack) CreateGame(trigger_id string) (*http.Response, error) {
+func (s* Slack) CreateGame(trigger_id string, text string) (*http.Response, error) {
 	body := []byte(fmt.Sprintf(`{
 	"trigger_id": "%s",
 	"view": {
@@ -195,6 +195,7 @@ func (s* Slack) CreateGame(trigger_id string) (*http.Response, error) {
 			"blocks": [
 				{
 					"type": "input",
+					"initial_value": "%s",
 					"label": {
 						"type": "plain_text",
 						"text": "Game Name"
@@ -213,7 +214,7 @@ func (s* Slack) CreateGame(trigger_id string) (*http.Response, error) {
 			],
 			"callback_id": "create_game"
 		}
-	}`, trigger_id))
+	}`, trigger_id, text))
 		return s.request(Request{
 			path: "/views.open",
 			method: http.MethodPost,

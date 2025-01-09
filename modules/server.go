@@ -120,9 +120,11 @@ func createGameHandler(ctx *gin.Context, slack *Slack, db *DB) {
 	payload.Text = ctx.Request.Form.Get("text")
 	fmt.Printf("Trigger ID: %s, Text: %s\n", payload.TriggerId, payload.Text)
 	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: "Hello from Felo go app. Received /create-game command!, Args: " + payload.Text + " " +payload.TriggerId})
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error creating game" + err.Error()})
-	// 	return
-	// }
-	// ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: resp})
+
+	resp, err := slack.CreateGame(payload.TriggerId, payload.Text)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error creating game" + err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: resp})
 }
