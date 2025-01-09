@@ -115,11 +115,8 @@ func createGameHandler(ctx *gin.Context, slack *Slack, db *DB) {
 		ctx.JSON(http.StatusBadRequest, Response{Status: "error", Ok: false, Message: "Error parsing form"})
 		return
 	}
-
 	payload.TriggerId = ctx.Request.Form.Get("trigger_id")
 	payload.Text = ctx.Request.Form.Get("text")
-	fmt.Printf("Trigger ID: %s, Text: %s\n", payload.TriggerId, payload.Text)
-	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: "Hello from Felo go app. Received /create-game command!, Args: " + payload.Text + " " +payload.TriggerId})
 
 	resp, err := slack.CreateGame(payload.TriggerId, payload.Text)
 	if err != nil {
