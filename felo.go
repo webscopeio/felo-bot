@@ -3,56 +3,33 @@ package main
 import (
 	// std
 	"fmt"
-	"os"
-	// local modules
-	"webscope.io/felo/modules/server"
-	"webscope.io/felo/modules/slack"
-	// external modules
-	"github.com/joho/godotenv"
+	"net/http"
+
+	// internal modules
+	"webscope.io/felo/modules"
+	"webscope.io/felo/modules/utils"
 )
 
-type ENV struct {
-	BOT_TOKEN string
-	ENV       string
-	PORT      string
-}
-
-func readEnv() (ENV, error) {
-	envMap := map[string]string{}
-	envKeys := []string{
-		"BOT_TOKEN",
-		"ENV",
-		"PORT",
-	}
-
-	localEnv, envErr := godotenv.Read(".env")
-
-	for _, key := range envKeys {
-		// Atempt to get OS level ENV variable
-		val := os.Getenv(key)
-		if val == "" {
-			// If not found, attempt to read from .env file
-			if envErr != nil || localEnv[key] == "" {
-				return ENV{}, fmt.Errorf("missing environment variable %s", key)
-			} else {
-				val = localEnv[key]
-			}
-		}
-		envMap[key] = val
-	}
-	return ENV{
-		BOT_TOKEN: envMap["BOT_TOKEN"],
-		ENV:       envMap["ENV"],
-		PORT:      envMap["PORT"],
-	}, nil
-}
-
 func main() {
-	env, err := readEnv()
+	env, err := utils.ReadEnv()
 	if err != nil {
 		fmt.Println("Error reading .env file")
 		panic(err)
 	}
-	client := slack.New(env.BOT_TOKEN)
-	server.New(env.ENV, env.PORT, client)
+	supabase := &modules.Supabase{
+		SUPABASE_KEY: env.SUPABASE_KEY,
+		SUPABASE_URL: env.SUPABASE_URL,
+	}
+	db, err := supabase.Init(nil)
+	if err != nil {
+		fmt.Printf("Error initializing Supabase client")
+		panic(err)
+	}
+	slack := &modules.Slack{
+		BOT_TOKEN: env.BOT_TOKEN,
+		API_URL: "https://slack.com/api",
+		HTTP_CLIENT: &http.Client{},
+	}
+	server := &modules.Server{}
+	server.New(env.ENV, env.PORT, slack, db)
 }
