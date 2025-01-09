@@ -8,7 +8,7 @@ import (
 )
 
 func MapBodyTo[T interface{}](resp *http.Response, to *T) error {
-	if (resp.StatusCode != http.StatusOK) {
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("error fetching slack users: %s", resp.Status)
 	}
 	data, err := io.ReadAll(resp.Body)
@@ -18,5 +18,3 @@ func MapBodyTo[T interface{}](resp *http.Response, to *T) error {
 	defer resp.Body.Close()
 	return json.Unmarshal(data, to)
 }
-
-

@@ -19,7 +19,7 @@ func eventsHandler(ctx *gin.Context, client *slack.Client, db *supabase.DB) {
 		ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error reading request body"})
 		return
 	}
-	
+
 	var eventBody struct {
 		Type      string `json:"type"`
 		Challenge string `json:"challenge"`
@@ -32,10 +32,10 @@ func eventsHandler(ctx *gin.Context, client *slack.Client, db *supabase.DB) {
 
 	eventType := eventBody.Type
 	switch eventType {
-		case "url_verification":
-			challenge := eventBody.Challenge
-			ctx.JSON(http.StatusOK, gin.H{"challenge": challenge})
-		default:
-			ctx.JSON(http.StatusOK, gin.H{"status": "success", "ok": true})
-		}
+	case "url_verification":
+		challenge := eventBody.Challenge
+		ctx.JSON(http.StatusOK, gin.H{"challenge": challenge})
+	default:
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "ok": true})
+	}
 }

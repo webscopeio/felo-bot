@@ -3,9 +3,9 @@ package supabase
 import "encoding/json"
 
 type User struct {
-	Id   string `json:"id" db:"id"`
+	Id        string `json:"id" db:"id"`
 	Username  string `json:"username" db:"username"`
-	Name string `json:"name" db:"name"`
+	Name      string `json:"name" db:"name"`
 	CreatedAt string `json:"created_at" db:"created_at"`
 }
 
@@ -17,7 +17,7 @@ func GetAllUsers(db *DB) (*QueryResult[User], error) {
 	}
 	json.Unmarshal(data, &users)
 	return &QueryResult[User]{
-		data: users,
+		data:  users,
 		count: count,
 	}, nil
 }
@@ -30,4 +30,4 @@ func GetUserById(db *DB, id string) (*User, error) {
 	}
 	json.Unmarshal(data, &user)
 	return &user, nil
-} 
+}

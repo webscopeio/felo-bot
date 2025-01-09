@@ -8,13 +8,11 @@ import (
 
 /* ---------------------------------- Setup --------------------------------- */
 
-type Server struct {}
-
 type Response struct {
-	Status string      `json:"status"`
-	Ok     bool        `json:"ok"`
+	Status  string      `json:"status"`
+	Ok      bool        `json:"ok"`
 	Message string      `json:"message,omitempty"`
-	Data   interface{} `json:"data,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 type HandlerCallback = func(func(ctx *gin.Context, client *slack.Client, db *supabase.DB)) gin.HandlerFunc
@@ -28,7 +26,7 @@ func createHandlerWithClients(client *slack.Client, db *supabase.DB) HandlerCall
 	}
 }
 
-func (s* Server) New(env string, port string, client *slack.Client, db *supabase.DB) {
+func Start(env string, port string, client *slack.Client, db *supabase.DB) {
 	if env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}

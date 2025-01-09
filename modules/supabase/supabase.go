@@ -18,6 +18,6 @@ func (s *Client) Init(options *supabase.ClientOptions) (*supabase.Client, error)
 type DB = supabase.Client
 
 type QueryResult[T User | Rating | Match] struct {
-	data []T
+	data  []T
 	count int64
 }

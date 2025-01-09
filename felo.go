@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	// internal modules
-	"webscope.io/felo/modules/utils"
-	"webscope.io/felo/modules/supabase"
-	"webscope.io/felo/modules/slack"
 	"webscope.io/felo/modules/server"
+	"webscope.io/felo/modules/slack"
+	"webscope.io/felo/modules/supabase"
+	"webscope.io/felo/modules/utils"
 )
 
 func main() {
@@ -28,10 +28,9 @@ func main() {
 		panic(err)
 	}
 	slack := &slack.Client{
-		BOT_TOKEN: env.BOT_TOKEN,
-		API_URL: "https://slack.com/api",
+		BOT_TOKEN:   env.BOT_TOKEN,
+		API_URL:     "https://slack.com/api",
 		HTTP_CLIENT: &http.Client{},
 	}
-	server := &server.Server{}
-	server.New(env.ENV, env.PORT, slack, db)
+	server.Start(env.ENV, env.PORT, slack, db)
 }

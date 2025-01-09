@@ -9,9 +9,9 @@ import (
 )
 
 type ENV struct {
-	BOT_TOKEN string
-	ENV       string
-	PORT      string
+	BOT_TOKEN    string
+	ENV          string
+	PORT         string
 	SUPABASE_URL string
 	SUPABASE_KEY string
 }
@@ -42,9 +42,9 @@ func ReadEnv() (ENV, error) {
 		envMap[key] = val
 	}
 	return ENV{
-		BOT_TOKEN: envMap["BOT_TOKEN"],
-		ENV:       envMap["ENV"],
-		PORT:      envMap["PORT"],
+		BOT_TOKEN:    envMap["BOT_TOKEN"],
+		ENV:          envMap["ENV"],
+		PORT:         envMap["PORT"],
 		SUPABASE_URL: envMap["SUPABASE_URL"],
 		SUPABASE_KEY: envMap["SUPABASE_KEY"],
 	}, nil
