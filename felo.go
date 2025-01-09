@@ -6,8 +6,10 @@ import (
 	"net/http"
 
 	// internal modules
-	"webscope.io/felo/modules"
 	"webscope.io/felo/modules/utils"
+	"webscope.io/felo/modules/supabase"
+	"webscope.io/felo/modules/slack"
+	"webscope.io/felo/modules/server"
 )
 
 func main() {
@@ -16,7 +18,7 @@ func main() {
 		fmt.Println("Error reading .env file")
 		panic(err)
 	}
-	supabase := &modules.Supabase{
+	supabase := &supabase.Client{
 		SUPABASE_KEY: env.SUPABASE_KEY,
 		SUPABASE_URL: env.SUPABASE_URL,
 	}
@@ -25,11 +27,11 @@ func main() {
 		fmt.Printf("Error initializing Supabase client")
 		panic(err)
 	}
-	slack := &modules.Slack{
+	slack := &slack.Client{
 		BOT_TOKEN: env.BOT_TOKEN,
 		API_URL: "https://slack.com/api",
 		HTTP_CLIENT: &http.Client{},
 	}
-	server := &modules.Server{}
+	server := &server.Server{}
 	server.New(env.ENV, env.PORT, slack, db)
 }
