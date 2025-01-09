@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -103,10 +104,20 @@ func createGameHandler(ctx *gin.Context, slack *Slack, db *DB) {
 		TriggerId string `json:"trigger_id"`
 		Text string `json:"text"`
 	}
-	if err := ctx.BindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, Response{Status: "error", Ok: false, Message: "Error parsing request body"})
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, ctx.Request.Body); err != nil {
+		ctx.JSON(http.StatusBadRequest, Response{Status: "error", Ok: false, Message: "Error reading request body"})
 		return
 	}
+	ctx.Request.Body = io.NopCloser(&buf)
+
+	if err := ctx.Request.ParseForm(); err != nil {
+		ctx.JSON(http.StatusBadRequest, Response{Status: "error", Ok: false, Message: "Error parsing form"})
+		return
+	}
+
+	payload.TriggerId = ctx.Request.Form.Get("trigger_id")
+	payload.Text = ctx.Request.Form.Get("text")
 	fmt.Printf("Trigger ID: %s, Text: %s\n", payload.TriggerId, payload.Text)
 	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: "Hello from Felo go app. Received /create-game command!, Args: " + payload.Text + " " +payload.TriggerId})
 	// if err != nil {
