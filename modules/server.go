@@ -3,6 +3,7 @@ package modules
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -122,5 +123,8 @@ func createGameHandler(ctx *gin.Context, slack *Slack, db *DB) {
 		ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error creating game" + err.Error()})
 		return
 	}
+	data, _ := io.ReadAll(resp.Body)
+	fmt.Printf("Response: %s\n", string(data))
+	resp.Body = io.NopCloser(bytes.NewBuffer(data))
 	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: resp})
 }

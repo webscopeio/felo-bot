@@ -35,6 +35,13 @@ func (s *Slack) request(r Request) (*http.Response, error) {
 	for k, v := range r.params {
 		query.Set(k, v)
 	}
+	if r.body != nil {
+		// Read and print the body for debugging
+		bodyBytes, _ := io.ReadAll(r.body)
+		fmt.Printf("Request body: %s\n", string(bodyBytes))
+		// Reset the body for the actual request
+		r.body = bytes.NewBuffer(bodyBytes)
+	}
 	uri.RawQuery = query.Encode()
 	req, err := http.NewRequest(r.method, uri.String(), r.body)
 	if err != nil {
@@ -43,8 +50,7 @@ func (s *Slack) request(r Request) (*http.Response, error) {
 	if r.method == http.MethodGet {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	} else {
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		req.Header.Add("Content-Type", "application/json")
+		req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	}
 	req.Header.Set("Authorization", "Bearer "+s.BOT_TOKEN)
 	return s.HTTP_CLIENT.Do(req)
@@ -176,49 +182,47 @@ func (s* Slack) PostMatch() (*http.Response, error) {
 
 func (s* Slack) CreateGame(trigger_id string, text string) (*http.Response, error) {
 	body := []byte(fmt.Sprintf(`{
-	"trigger_id": "%s",
-	"view": {
-			"type": "modal",
-			"title": {
-				"type": "plain_text",
-				"text": "Create a new game type"
-			},
-			"submit": {
-				"type": "plain_text",
-				"text": "Submit"
-			},
-			"close": {
-				"type": "plain_text",
-				"text": "Cancel"
-			},
-			"submit_disabled": true,
-			"blocks": [
-				{
-					"type": "input",
-					"block_id": "game_name_block",
-					"label": {
+		"trigger_id": "%s",
+		"view": {
+				"type": "modal",
+				"title": {
 						"type": "plain_text",
-						"text": "Game Name"
-					},
-					"element": {
-						"type": "plain_text_input",
-						"action_id": "game_name",
-						"initial_value": "%s",
-						"placeholder": {
-							"type": "plain_text",
-							"text": "Enter game name"
-						},
-						"multiline": false
-					},
-					"optional": false
-				}
-			],
-			"callback_id": "create_game"
+						"text": "Create Game"
+				},
+				"submit": {
+						"type": "plain_text",
+						"text": "Submit"
+				},
+				"close": {
+						"type": "plain_text",
+						"text": "Cancel"
+				},
+				"blocks": [
+						{
+								"type": "input",
+								"block_id": "game_name_block",
+								"label": {
+										"type": "plain_text",
+										"text": "Game Name"
+								},
+								"element": {
+										"type": "plain_text_input",
+										"action_id": "game_name",
+										"initial_value": "%s",
+										"placeholder": {
+												"type": "plain_text",
+												"text": "Enter game name"
+										},
+										"multiline": false
+								}
+						}
+				],
+				"callback_id": "create_game"
 		}
-	}`, trigger_id, text))
+}`, trigger_id, text))
 		return s.request(Request{
 			path: "/views.open",
 			method: http.MethodPost,
 			body: bytes.NewBuffer(body),
-		})
+			})
 }
