@@ -32,7 +32,7 @@ type Element struct {
 	Placeholder  struct {
 		Type string `json:"type"`
 		Text string `json:"text"`
-	}
+	} `json:"placeholder"`
 	Multiline bool `json:"multiline"`
 }
 
