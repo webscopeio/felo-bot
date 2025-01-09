@@ -174,20 +174,22 @@ func (s* Slack) PostMatch() (*http.Response, error) {
 		})
 }
 
-func (s* Slack) CreateGame() (*http.Response, error) {
-		body := []byte(`{
+func (s* Slack) CreateGame(trigger_id string) (*http.Response, error) {
+	body := []byte(fmt.Sprintf(`{
+	"trigger_id": "%s",
+	"view": {
 			"type": "modal",
 			"title": {
 				"type": "plain_text",
-				"text": "Create a new game type",
+				"text": "Create a new game type"
 			},
 			"submit": {
 				"type": "plain_text",
-				"text": "Submit",
+				"text": "Submit"
 			},
 			"close": {
 				"type": "plain_text",
-				"text": "Cancel",
+				"text": "Cancel"
 			},
 			"submit_disabled": true,
 			"blocks": [
@@ -195,19 +197,23 @@ func (s* Slack) CreateGame() (*http.Response, error) {
 					"type": "input",
 					"label": {
 						"type": "plain_text",
-						"text": "Game Name",
+						"text": "Game Name"
 					},
 					"element": {
 						"type": "plain_text_input",
 						"action_id": "game_name",
 						"placeholder": {
 							"type": "plain_text",
-							"text": "Enter game name",
+							"text": "Enter game name"
 						},
+						"multiline": false
 					},
+					"optional": false
 				}
-			]
-		}`)
+			],
+			"callback_id": "create_game"
+		}
+	}`, trigger_id))
 		return s.request(Request{
 			path: "/views.open",
 			method: http.MethodPost,

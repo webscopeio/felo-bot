@@ -2,6 +2,7 @@ package modules
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -98,10 +99,19 @@ func matchHandler(ctx *gin.Context, client *Slack, db *DB) {
 }
 
 func createGameHandler(ctx *gin.Context, slack *Slack, db *DB) {
-	resp, err := slack.CreateGame()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error creating game" + err.Error()})
+	var payload struct {
+		TriggerId string `json:"trigger_id"`
+		Text string `json:"text"`
+	}
+	if err := ctx.BindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, Response{Status: "error", Ok: false, Message: "Error parsing request body"})
 		return
 	}
-	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: resp})
+	fmt.Printf("Trigger ID: %s, Text: %s\n", payload.TriggerId, payload.Text)
+	ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: "Hello from Felo go app. Received /create-game command!, Args: " + payload.Text + " " +payload.TriggerId})
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, Response{Status: "error", Ok: false, Message: "Error creating game" + err.Error()})
+	// 	return
+	// }
+	// ctx.JSON(http.StatusOK, Response{Status: "success", Ok: true, Data: resp})
 }
