@@ -195,7 +195,7 @@ func (s* Slack) CreateGame(trigger_id string, text string) (*http.Response, erro
 			"blocks": [
 				{
 					"type": "input",
-					"initial_value": "%s",
+					"block_id": "game_name_block",
 					"label": {
 						"type": "plain_text",
 						"text": "Game Name"
@@ -203,6 +203,7 @@ func (s* Slack) CreateGame(trigger_id string, text string) (*http.Response, erro
 					"element": {
 						"type": "plain_text_input",
 						"action_id": "game_name",
+						"initial_value": "%s",
 						"placeholder": {
 							"type": "plain_text",
 							"text": "Enter game name"
